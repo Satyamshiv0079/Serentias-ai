@@ -83,9 +83,59 @@ function createCandleAudio() {
   }
 }
 
+const SAND_STYLES = {
+  obsidian: {
+    name: 'Obsidian',
+    bgColor: '#0e0e15',
+    strokeRGB: '4, 4, 6',
+    highlightRGB: '255, 255, 255',
+    glowRGB: '129, 140, 248',
+    grainColor: 'rgba(255, 255, 255, 0.015)'
+  },
+  white: {
+    name: 'White Sand',
+    bgColor: '#f4f4ec',
+    strokeRGB: '205, 205, 195',
+    highlightRGB: '255, 255, 255',
+    glowRGB: '129, 140, 248',
+    grainColor: 'rgba(0, 0, 0, 0.015)'
+  },
+  dune: {
+    name: 'Golden Dune',
+    bgColor: '#1c160f',
+    strokeRGB: '12, 8, 4',
+    highlightRGB: '245, 158, 11',
+    glowRGB: '245, 158, 11',
+    grainColor: 'rgba(245, 158, 11, 0.02)'
+  },
+  sage: {
+    name: 'Sage Green',
+    bgColor: '#0c120e',
+    strokeRGB: '4, 6, 5',
+    highlightRGB: '16, 185, 129',
+    glowRGB: '16, 185, 129',
+    grainColor: 'rgba(16, 185, 129, 0.02)'
+  }
+}
+
 export default function ZenSpace({ setView }) {
   const [candleLit, setCandleLit] = useState(false)
   const [intensity, setIntensity] = useState(0.5)
+  const [sandColor, setSandColor] = useState(() => {
+    try {
+      return localStorage.getItem('serentias_sand_color') || 'obsidian'
+    } catch {
+      return 'obsidian'
+    }
+  })
+
+  const activeStyleRef = useRef(SAND_STYLES[sandColor])
+  useEffect(() => {
+    activeStyleRef.current = SAND_STYLES[sandColor]
+    try {
+      localStorage.setItem('serentias_sand_color', sandColor)
+    } catch {}
+  }, [sandColor])
 
   const canvasRef = useRef(null)
   const isDrawing = useRef(false)
@@ -140,12 +190,11 @@ export default function ZenSpace({ setView }) {
     let animFrame
 
     const drawSandBackground = () => {
-      // Base dark grey/slate sand color
-      ctx.fillStyle = '#0e0e15'
+      const style = activeStyleRef.current
+      ctx.fillStyle = style.bgColor
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      // Draw subtle grain texture
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.015)'
+      ctx.fillStyle = style.grainColor
       for (let i = 0; i < canvas.width; i += 3) {
         for (let j = 0; j < canvas.height; j += 3) {
           if (Math.random() > 0.85) {
@@ -156,6 +205,7 @@ export default function ZenSpace({ setView }) {
     }
 
     const render = () => {
+      const style = activeStyleRef.current
       drawSandBackground()
 
       const now = Date.now()
@@ -172,8 +222,8 @@ export default function ZenSpace({ setView }) {
 
         // Draw shadow/groove
         ctx.lineWidth = 14
-        ctx.strokeStyle = `rgba(4, 4, 6, ${opacity * 0.75})`
-        ctx.shadowColor = `rgba(129, 140, 248, ${opacity * 0.08})`
+        ctx.strokeStyle = `rgba(${style.strokeRGB}, ${opacity * 0.75})`
+        ctx.shadowColor = `rgba(${style.glowRGB}, ${opacity * 0.08})`
         ctx.shadowBlur = 8
         ctx.beginPath()
         path.points.forEach((pt, idx) => {
@@ -184,7 +234,7 @@ export default function ZenSpace({ setView }) {
 
         // Draw inner rake highlight
         ctx.lineWidth = 2
-        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity * 0.05})`
+        ctx.strokeStyle = `rgba(${style.highlightRGB}, ${opacity * 0.05})`
         ctx.shadowBlur = 0
         ctx.beginPath()
         path.points.forEach((pt, idx) => {
@@ -197,8 +247,8 @@ export default function ZenSpace({ setView }) {
       // Draw current path being drawn
       if (currentPath.current.length > 0) {
         ctx.lineWidth = 14
-        ctx.strokeStyle = 'rgba(4, 4, 6, 0.75)'
-        ctx.shadowColor = 'rgba(129, 140, 248, 0.08)'
+        ctx.strokeStyle = `rgba(${style.strokeRGB}, 0.75)`
+        ctx.shadowColor = `rgba(${style.glowRGB}, 0.08)`
         ctx.shadowBlur = 8
         ctx.beginPath()
         currentPath.current.forEach((pt, idx) => {
@@ -208,7 +258,7 @@ export default function ZenSpace({ setView }) {
         ctx.stroke()
 
         ctx.lineWidth = 2
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
+        ctx.strokeStyle = `rgba(${style.highlightRGB}, 0.05)`
         ctx.shadowBlur = 0
         ctx.beginPath()
         currentPath.current.forEach((pt, idx) => {
@@ -312,6 +362,28 @@ export default function ZenSpace({ setView }) {
           >
             Smooth Sand
           </button>
+          {/* Sand Color Picker swatches */}
+          <div className="absolute bottom-4 left-4 z-20 flex gap-2 bg-[#0f0f18]/60 border border-white/5 rounded-2xl p-2 backdrop-blur-sm animate-fade-in">
+            {Object.entries(SAND_STYLES).map(([key, item]) => {
+              const colorPreviewMap = {
+                obsidian: 'bg-slate-900 border-slate-700',
+                white: 'bg-stone-100 border-stone-200',
+                dune: 'bg-yellow-950 border-yellow-900/60',
+                sage: 'bg-emerald-950 border-emerald-900/60'
+              }
+              const isActive = sandColor === key
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSandColor(key)}
+                  className={`w-6 h-6 rounded-full border transition-all ${colorPreviewMap[key]} ${
+                    isActive ? 'scale-110 ring-1 ring-indigo-400' : 'opacity-70 hover:opacity-100 hover:scale-105'
+                  }`}
+                  title={`${item.name} Sand`}
+                />
+              )
+            })}
+          </div>
           <canvas
             ref={canvasRef}
             onMouseDown={handleStart}

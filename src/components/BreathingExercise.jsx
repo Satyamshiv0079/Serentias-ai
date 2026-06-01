@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { X, Play, Square } from 'lucide-react'
 
 const PRESETS = {
@@ -65,6 +65,11 @@ function playPhaseChime(phaseName) {
   }
 }
 
+const LS = {
+  get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def } catch { return def } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} },
+}
+
 export default function BreathingExercise({ onClose }) {
   const [presetKey, setPresetKey] = useState('calm')
   const [phaseIdx, setPhaseIdx] = useState(0)
@@ -72,15 +77,49 @@ export default function BreathingExercise({ onClose }) {
   const [cycles, setCycles] = useState(0)
   const [active, setActive] = useState(false)
 
-  const activePreset = PRESETS[presetKey]
+  const [customInhale, setCustomInhale] = useState(() => LS.get('serentias_custom_inhale', 4))
+  const [customHold, setCustomHold] = useState(() => LS.get('serentias_custom_hold', 4))
+  const [customExhale, setCustomExhale] = useState(() => LS.get('serentias_custom_exhale', 4))
+
+  useEffect(() => {
+    LS.set('serentias_custom_inhale', customInhale)
+    LS.set('serentias_custom_hold', customHold)
+    LS.set('serentias_custom_exhale', customExhale)
+  }, [customInhale, customHold, customExhale])
+
+  const activePreset = useMemo(() => {
+    if (presetKey === 'custom') {
+      return {
+        name: 'Custom',
+        description: 'Personalized Rhythm',
+        phases: [
+          { name: 'Inhale', duration: customInhale, next: 'Hold', color: '#818cf8', guide: 'Draw breath slowly through your nose…' },
+          { name: 'Hold', duration: customHold, next: 'Exhale', color: '#a78bfa', guide: 'Hold gently. Feel the fullness.' },
+          { name: 'Exhale', duration: customExhale, next: 'Inhale', color: '#6d7cca', guide: 'Release slowly through your mouth…' },
+        ]
+      }
+    }
+    return PRESETS[presetKey]
+  }, [presetKey, customInhale, customHold, customExhale])
+
   const phase = activePreset.phases[phaseIdx]
+
+  useEffect(() => {
+    if (!active && presetKey === 'custom') {
+      setTimer(customInhale)
+    }
+  }, [customInhale, presetKey, active])
 
   // Reset preset states on selection change
   const changePreset = (key) => {
     if (active) return // ignore changes while playing
     setPresetKey(key)
     setPhaseIdx(0)
-    setTimer(PRESETS[key].phases[0].duration)
+    
+    const targetPreset = key === 'custom'
+      ? { phases: [{ duration: customInhale }] }
+      : PRESETS[key]
+    setTimer(targetPreset.phases[0].duration)
     setCycles(0)
   }
 
@@ -156,7 +195,7 @@ export default function BreathingExercise({ onClose }) {
 
         {/* Preset Selector Dropdown */}
         {!active && (
-          <div className="flex justify-center pt-2">
+          <div className="flex flex-col gap-4 items-center pt-2">
             <select
               value={presetKey}
               onChange={(e) => changePreset(e.target.value)}
@@ -167,7 +206,61 @@ export default function BreathingExercise({ onClose }) {
                   {p.name} ({p.phases.map(ph => ph.duration).join('-')})
                 </option>
               ))}
+              <option value="custom" className="bg-[#0f0f18] text-slate-400">
+                Custom Rhythm
+              </option>
             </select>
+
+            {presetKey === 'custom' && (
+              <div className="w-full bg-white/3 border border-white/6 rounded-2xl p-4 space-y-4 fade-in max-w-xs text-left">
+                <p className="text-[9px] uppercase tracking-[0.2em] text-indigo-300 font-medium">Custom Rhythm (seconds)</p>
+                
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
+                    <span>Inhale</span>
+                    <span className="text-white font-mono">{customInhale}s</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="12"
+                    value={customInhale}
+                    onChange={(e) => setCustomInhale(parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-indigo-400"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
+                    <span>Hold</span>
+                    <span className="text-white font-mono">{customHold}s</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="12"
+                    value={customHold}
+                    onChange={(e) => setCustomHold(parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-purple-400"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] text-slate-400">
+                    <span>Exhale</span>
+                    <span className="text-white font-mono">{customExhale}s</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="12"
+                    value={customExhale}
+                    onChange={(e) => setCustomExhale(parseInt(e.target.value))}
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-indigo-300"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
 
