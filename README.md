@@ -32,13 +32,18 @@ Everything is kept **100% private** on your device. There are no accounts, no tr
 * **Atmosphere Sound Mixer**: Simultaneously mix up to four ambient sounds (Rain, Forest, Ocean, Fire) with individual track volume sliders, global silence toggles, and a master volume control.
 * **Mood Heatmap Calendar**: A comprehensive GitHub-style 12-week grid tracker summarizing your long-term emotional journey using color intensity levels.
 
-### 🧠 4. Dynamic Companionship & Local RAG
+### 4. 🧠 Dynamic Companionship & Local RAG
 * **Client-Side Soulful Memory RAG**: Scans your latest chat message, cleans stopwords, and automatically searches your past local journal entries for emotional matches. Relevant memories are seamlessly supplied to the AI context so it organically remembers your life journey.
 * **Reflective Conversation Modes**: Toggle your companion style dynamically to match your mood:
-  * 🌿 **Poetic**: Emotional metaphors of light and nature (default).
-  * 🤫 **Quiet**: Minimalist, deeply validating short comments that let you speak.
-  * 🪞 **Reflective**: Active-listening helper that poses gentle, open-ended questions.
+  * 🌿 **Poetic**: Metaphors of light, space, and nature.
+  * 🤫 **Quiet**: Concise, warm, and highly comforting validation.
+  * 🪞 **Reflective**: Gentle open-ended probes prompting deeper writing.
 * **Backup & Portability**: Secure JSON data backup utilities to export all your private journal entries, messages, and settings into a single file and import them back cleanly.
+
+### 🎙️ 5. Multilingual Voice & Speech
+* **Gentle Text-to-Speech (TTS)**: Let Serentias read replies aloud. Configured with a gentle speaking tempo (`rate: 0.85`) and a warm tone (`pitch: 0.95`).
+* **Multilingual Options**: Toggle spoken languages between English, Hindi, Spanish, or French inside the settings.
+* **Microphone Input (STT)**: Dictate thoughts directly in the chat input through a pulse-animated microphone recorder button, completely hand-free.
 
 ---
 
@@ -66,17 +71,17 @@ npm run dev
 
 1. Push this repository to GitHub.
 2. Go to [vercel.com](https://vercel.com) → New Project → Import this repository.
-3. Under **Environment Variables**, add:
-   * `VITE_GROQ_API_KEY` = *your Groq API key*
+3. **Keep "Environment Variables" completely empty** to ensure your personal API key is never exposed or bundled publicly!
 4. Click **Deploy**.
+5. Once your site is live, open the URL, go to the **Settings Panel (gear icon)**, and paste your API key securely into the AI Companion Key field. It will save privately to your browser cache!
 
 ---
 
 ## 🛠️ Tech Stack
 
 * **Core**: React 18 + Vite + Tailwind CSS 3 + Lucide Icons
-* **Audio Synthesis**: Native Web Audio API (completely offline-ready chimes and crackle pads)
-* **AI engine**: Groq API (`llama3-8b-8192` with client-side context RAG indexing)
+* **Audio Synthesis**: Native Web Audio API (completely offline-ready bowl chimes and wood-crackling loops)
+* **AI engine**: Groq API (`llama-3.1-8b-instant` with client-side context RAG indexing and local key setup)
 * **Data Visualization**: Recharts (Mood charts)
 * **Storage**: LocalStorage (Zero server storage)
 
