@@ -22,11 +22,11 @@ Everything is kept **100% private** on your device. There are no accounts, no tr
   * ☀️ **Azure** (12 PM - 5 PM): Calm, bright sky blue afternoon.
   * 🌆 **Twilight** (5 PM - 8 PM): A beautiful twilight violet.
   * 🌌 **Void** (8 PM - 5 AM): Deep stellar space black.
-* **Zen Sand Garden**: An interactive dark sand canvas where cursor movements rake organic 3D grooves that slowly fade out over 10 seconds, encouraging continuous, mindful drawing.
+* **Zen Sand Garden**: An interactive raked sand canvas featuring four premium mineral styles (Obsidian, White Sand, Golden Dune, Sage Green). Cursor movements rake organic 3D grooves that slowly fade out over 10 seconds, encouraging continuous, mindful drawing.
 * **Interactive Virtual Candle**: Light a minimalist CSS flame that flickers randomly, accompanied by synthesized wood-crackling loops generated dynamically via Web Audio API.
 
 ### 🃏 3. High Stickiness & Guided Practice
-* **Guided Breathing Customizer**: Preset selector for multiple deep breathing exercises (4-4-6 Calm Grounding, 4-4-4-4 Box Breathing, and 4-7-8 Deep Sleep) accompanied by Web Audio synthesized mindfulness bowl transition chimes.
+* **Guided Breathing Customizer**: Custom rhythm visualizer with dynamic range sliders (Inhale, Hold, and Exhale durations from 1s to 12s) alongside grounding presets (4-4-6 Calm, 4-4-4-4 Box, and 4-7-8 Deep Sleep), accompanied by Web Audio synthesized bowl chime chords.
 * **Daily Affirmation Cards**: Seeded deterministically by the date, draw a beautiful card once a day featuring soft, poetic encouragement with a full 3D flip animation.
 * **Gratitude Jar**: Write down what you're grateful for and watch your glass jar fill up with colorful visual moments of reflection stored in your local logs.
 * **Atmosphere Sound Mixer**: Simultaneously mix up to four ambient sounds (Rain, Forest, Ocean, Fire) with individual track volume sliders, global silence toggles, and a master volume control.
@@ -44,6 +44,10 @@ Everything is kept **100% private** on your device. There are no accounts, no tr
 * **Gentle Text-to-Speech (TTS)**: Let Serentias read replies aloud. Configured with a gentle speaking tempo (`rate: 0.85`) and a warm tone (`pitch: 0.95`).
 * **Multilingual Options**: Toggle spoken languages between English, Hindi, Spanish, or French inside the settings.
 * **Microphone Input (STT)**: Dictate thoughts directly in the chat input through a pulse-animated microphone recorder button, completely hand-free.
+
+### 📱 6. Progressive Web App (PWA)
+* **Standalone Installation**: Install Serentias natively on your mobile home screen or desktop launcher for a clean, app-like experience.
+* **100% Offline Support**: Utilizes a Stale-While-Revalidate caching Service Worker to dynamically capture assets and production bundles, letting you run the entire app completely offline.
 
 ---
 
@@ -83,6 +87,7 @@ npm run dev
 * **Audio Synthesis**: Native Web Audio API (completely offline-ready bowl chimes and wood-crackling loops)
 * **AI engine**: Groq API (`llama-3.1-8b-instant` with client-side context RAG indexing and local key setup)
 * **Data Visualization**: Recharts (Mood charts)
+* **PWA & Offline caching**: Web Manifest (`manifest.json`) + Stale-While-Revalidate Service Worker (`sw.js`)
 * **Storage**: LocalStorage (Zero server storage)
 
 ---
